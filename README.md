@@ -9,7 +9,7 @@ based on this model
 You should invoque this script using simethin like this
 
 ```bash
-python crud_generator.py --model_name Budget  --django_application_folder ../django_app_folder/applications/budget/
+python django_crud_generator.py --model_name Budget  --django_application_folder ../django_app_folder/applications/budget/
 ```
 
 You can specify a model_prefix using `--model_prefix`
