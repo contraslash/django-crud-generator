@@ -1,0 +1,73 @@
+from django.core.urlresolvers import reverse_lazy
+
+from base import views as base_views
+from applications.authentication.mixins import SuperAdminRequiredMixin
+
+from .. import models
+from .. import forms
+from .. import conf
+
+
+class List(SuperAdminRequiredMixin, base_views.BaseListView):
+    """
+    List all forms
+    """
+    queryset = models.${model_name}.objects.all()
+
+    def __init__(self):
+        super(List, self).__init__()
+
+
+class Create(SuperAdminRequiredMixin, base_views.BaseCreateView):
+    """
+    Create a form
+    """
+    model = models.${model_name}
+    fields = '__all__'
+
+    def __init__(self):
+        super(Create, self).__init__()
+
+    def get_success_url(self):
+        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs={
+            'pk': self.object.id
+        })
+
+
+class Detail(SuperAdminRequiredMixin, base_views.BaseDetailView):
+    """
+    Detail of a form
+    """
+    model = models.${model_name}
+
+    def __init__(self):
+        super(Detail, self).__init__()
+
+
+class Update(SuperAdminRequiredMixin, base_views.BaseUpdateView):
+    """
+    Update a form
+    """
+    model = models.${model_name}
+    fields = '__all__'
+
+    def __init__(self):
+        super(Update, self).__init__()
+
+    def get_success_url(self):
+        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs={
+            'pk': self.object.id
+        })
+
+
+class Delete(SuperAdminRequiredMixin, base_views.BaseDeleteView):
+    """
+    Delete a form
+    """
+    model = models.${model_name}
+
+    def __init__(self):
+        super(Delete, self).__init__()
+
+    def get_success_url(self):
+        return reverse_lazy(conf.${model_prefix}_LIST_URL_NAME)
