@@ -1,14 +1,14 @@
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from base import views as base_views
-from applications.authentication.mixins import SuperAdminRequiredMixin
 
 from .. import models
 from .. import forms
 from .. import conf
 
 
-class List(SuperAdminRequiredMixin, base_views.BaseListView):
+class List(LoginRequiredMixin, base_views.BaseListView):
     """
     List all forms
     """
@@ -18,7 +18,7 @@ class List(SuperAdminRequiredMixin, base_views.BaseListView):
         super(List, self).__init__()
 
 
-class Create(SuperAdminRequiredMixin, base_views.BaseCreateView):
+class Create(LoginRequiredMixin, base_views.BaseCreateView):
     """
     Create a form
     """
@@ -34,7 +34,7 @@ class Create(SuperAdminRequiredMixin, base_views.BaseCreateView):
         })
 
 
-class Detail(SuperAdminRequiredMixin, base_views.BaseDetailView):
+class Detail(LoginRequiredMixin, base_views.BaseDetailView):
     """
     Detail of a form
     """
@@ -44,7 +44,7 @@ class Detail(SuperAdminRequiredMixin, base_views.BaseDetailView):
         super(Detail, self).__init__()
 
 
-class Update(SuperAdminRequiredMixin, base_views.BaseUpdateView):
+class Update(LoginRequiredMixin, base_views.BaseUpdateView):
     """
     Update a form
     """
@@ -60,7 +60,7 @@ class Update(SuperAdminRequiredMixin, base_views.BaseUpdateView):
         })
 
 
-class Delete(SuperAdminRequiredMixin, base_views.BaseDeleteView):
+class Delete(LoginRequiredMixin, base_views.BaseDeleteView):
     """
     Delete a form
     """

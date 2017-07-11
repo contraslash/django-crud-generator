@@ -30,7 +30,7 @@ def conf(args):
         conf_file.write("from base import conf\n")
     else:
         # If file exists, just load the file
-        conf_file = codecs.open(os.path.join(args['django_application_folder'], 'conf.py'), 'r+', encoding='UTF-8')
+        conf_file = codecs.open(os.path.join(args['django_application_folder'], 'conf.py'), 'a+', encoding='UTF-8')
 
     # Load content from template
     conf_template = "".join(codecs.open('conf.py.tmpl', encoding='UTF-8').readlines())
@@ -69,6 +69,36 @@ def views(args):
     view_file.write(template_rendered)
     view_file.close()
 
+
+def urls(args):
+    """
+    Create or modify the urls_file 
+    :param args: 
+    :return: 
+    """
+
+    if not os.path.isfile(os.path.join(args['django_application_folder'], 'urls.py')):
+        # If conf.py does not exists, create
+        urls_file = codecs.open(os.path.join(args['django_application_folder'], 'urls.py'), 'w+', encoding='UTF-8')
+        print("Creating urls.py")
+        urls_initial_template = "".join(codecs.open('urls_initial.py.tmpl', encoding='UTF-8').readlines())
+        urls_file.write(urls_initial_template)
+    else:
+        # If file exists, just load the file
+        urls_file = codecs.open(os.path.join(args['django_application_folder'], 'urls.py'), 'a+', encoding='UTF-8')
+
+    # Load content from template
+    urls_template = "".join(codecs.open('urls.py.tmpl', encoding='UTF-8').readlines())
+    template_rendered = string.Template(urls_template).safe_substitute(
+        model_prefix=args['model_prefix'],
+        url_pattern=args['url_pattern'],
+        view_file=args['model_name'].lower()
+    )
+
+    # Put content on file
+    urls_file.write(template_rendered)
+    urls_file.close()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Create a simple CRUD Structure based contraslash django application structure")
 
@@ -78,17 +108,24 @@ if __name__ == '__main__':
 
     parser.add_argument('--model_prefix', type=str, help="Prefix name for conf variable")
 
+    parser.add_argument('--url_pattern', type=str, help="Pattern for url")
+
     args = vars(parser.parse_args())
 
     # If model prefix is not defined, we'll going to define model_prefix as model_name in uppercase
     if args['model_prefix'] is None:
         args['model_prefix'] = args['model_name'].upper()
 
+    if args['url_pattern'] is None:
+        args['url_pattern'] = args['model_name'].lower()
+
     sanity_check()
 
     conf(args)
 
     views(args)
+
+    urls(args)
 
 
 
