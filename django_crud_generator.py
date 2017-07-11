@@ -4,34 +4,49 @@ import sys
 import codecs
 import string
 
-from pprint import pprint
-
 
 def sanity_check():
+    """
+    Verify if the work folder is a django app.
+    A valid django app always must have a models.py file
+    :return: None
+    """
     if not os.path.isfile(os.path.join(args['django_application_folder'], 'models.py')):
         print("django_application_folder is not a Django application folder")
         sys.exit(1)
 
 
 def conf(args):
-    print(os.path.join(args['django_application_folder'], 'conf.py'))
+    """
+    Create or modify the conf.py file
+    :param args: command line args
+    :return: 
+    """
+
     if not os.path.isfile(os.path.join(args['django_application_folder'], 'conf.py')):
+        # If conf.py does not exists, create
         conf_file = codecs.open(os.path.join(args['django_application_folder'], 'conf.py'), 'w+', encoding='UTF-8')
         print("Creating conf.py")
         conf_file.write("from base import conf\n")
     else:
+        # If file exists, just load the file
         conf_file = codecs.open(os.path.join(args['django_application_folder'], 'conf.py'), 'r+', encoding='UTF-8')
-        print("".join(conf_file.readlines()))
 
+    # Load content from template
     conf_template = "".join(codecs.open('conf.py.tmpl', encoding='UTF-8').readlines())
     template_rendered = string.Template(conf_template).safe_substitute(model_prefix=args['model_prefix'])
-    print(template_rendered)
 
+    # Put content on file
     conf_file.write(template_rendered)
     conf_file.close()
 
 
 def views(args):
+    """
+    Create the view file    
+    :param args: command line args 
+    :return: 
+    """
     if not os.path.isdir(os.path.join(args['django_application_folder'], 'views')):
         os.mkdir(os.path.join(args['django_application_folder'], 'views'))
         codecs.open(os.path.join(args['django_application_folder'], 'views', '__init__.py'), 'w+')
@@ -65,10 +80,9 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
+    # If model prefix is not defined, we'll going to define model_prefix as model_name in uppercase
     if args['model_prefix'] is None:
         args['model_prefix'] = args['model_name'].upper()
-
-    pprint(args)
 
     sanity_check()
 
