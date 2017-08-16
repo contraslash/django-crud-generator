@@ -3,9 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from base import views as base_views
 
-from .. import models
-from .. import forms
-from .. import conf
+from .. import (
+  models,
+  forms,
+  conf
+)
 
 
 class List(LoginRequiredMixin, base_views.BaseListView):
