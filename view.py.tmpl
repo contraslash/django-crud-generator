@@ -12,7 +12,7 @@ from .. import (
 
 class List(LoginRequiredMixin, base_views.BaseListView):
     """
-    List all forms
+    List all ${model_name}s
     """
     queryset = models.${model_name}.objects.all()
 
