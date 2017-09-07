@@ -22,7 +22,7 @@ class List(LoginRequiredMixin, base_views.BaseListView):
 
 class Create(LoginRequiredMixin, base_views.BaseCreateView):
     """
-    Create a form
+    Create a ${model_name}
     """
     model = models.${model_name}
     fields = '__all__'
@@ -38,7 +38,7 @@ class Create(LoginRequiredMixin, base_views.BaseCreateView):
 
 class Detail(LoginRequiredMixin, base_views.BaseDetailView):
     """
-    Detail of a form
+    Detail of a ${model_name}
     """
     model = models.${model_name}
 
@@ -48,7 +48,7 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
 
 class Update(LoginRequiredMixin, base_views.BaseUpdateView):
     """
-    Update a form
+    Update a ${model_name}
     """
     model = models.${model_name}
     fields = '__all__'
@@ -64,7 +64,7 @@ class Update(LoginRequiredMixin, base_views.BaseUpdateView):
 
 class Delete(LoginRequiredMixin, base_views.BaseDeleteView):
     """
-    Delete a form
+    Delete a ${model_name}
     """
     model = models.${model_name}
 
