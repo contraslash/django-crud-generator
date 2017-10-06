@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from base import views as base_views
 
@@ -20,11 +20,14 @@ class List(LoginRequiredMixin, base_views.BaseListView):
         super(List, self).__init__()
 
 
-class Create(LoginRequiredMixin, base_views.BaseCreateView):
+class Create(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseCreateView):
     """
     Create a ${model_name}
     """
     model = models.${model_name}
+    permission_required = (
+        '${app_name}.add_${model_name_lower}'
+    )
     fields = '__all__'
 
     def __init__(self):
@@ -46,12 +49,15 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
         super(Detail, self).__init__()
 
 
-class Update(LoginRequiredMixin, base_views.BaseUpdateView):
+class Update(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseUpdateView):
     """
     Update a ${model_name}
     """
     model = models.${model_name}
     fields = '__all__'
+    permission_required = (
+        '${app_name}.change_${model_name_lower}'
+    )
 
     def __init__(self):
         super(Update, self).__init__()
@@ -62,11 +68,14 @@ class Update(LoginRequiredMixin, base_views.BaseUpdateView):
         })
 
 
-class Delete(LoginRequiredMixin, base_views.BaseDeleteView):
+class Delete(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseDeleteView):
     """
     Delete a ${model_name}
     """
     model = models.${model_name}
+    permission_required = (
+        '${app_name}.delete_${model_name_lower}'
+    )
 
     def __init__(self):
         super(Delete, self).__init__()

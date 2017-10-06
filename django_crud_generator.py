@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 import argparse
 import os
 import sys
@@ -99,9 +98,14 @@ def views(args):
             encoding='UTF-8'
         ).readlines()
     )
+
+    application_name = args['django_application_folder'].split("/")[-1]
+
     template_rendered = string.Template(view_template).safe_substitute(
         model_name=args['model_name'],
-        model_prefix=args['model_prefix']
+        model_prefix=args['model_prefix'],
+        application_name=application_name,
+        model_name_lower=args['model_name'].lower()
     )
     view_file.write(template_rendered)
     view_file.close()
