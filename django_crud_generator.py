@@ -204,6 +204,11 @@ if __name__ == '__main__':
     if args['url_pattern'] is None:
         args['url_pattern'] = args['model_name'].lower()
 
+    if args['django_application_folder'].endswith("/"):
+        args['django_application_folder'] = args[
+            'django_application_folder'
+        ][:-1]
+
     sanity_check()
 
     conf(args)

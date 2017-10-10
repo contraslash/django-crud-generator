@@ -26,7 +26,7 @@ class Create(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseCreateV
     """
     model = models.${model_name}
     permission_required = (
-        '${app_name}.add_${model_name_lower}'
+        '${application_name}.add_${model_name_lower}'
     )
     fields = '__all__'
 
@@ -56,7 +56,7 @@ class Update(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseUpdateV
     model = models.${model_name}
     fields = '__all__'
     permission_required = (
-        '${app_name}.change_${model_name_lower}'
+        '${application_name}.change_${model_name_lower}'
     )
 
     def __init__(self):
@@ -74,7 +74,7 @@ class Delete(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseDeleteV
     """
     model = models.${model_name}
     permission_required = (
-        '${app_name}.delete_${model_name_lower}'
+        '${application_name}.delete_${model_name_lower}'
     )
 
     def __init__(self):
