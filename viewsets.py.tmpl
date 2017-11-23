@@ -1,0 +1,16 @@
+from rest_framework import viewsets
+
+from . import (
+    serializers,
+    models
+)
+
+class ${model_name}ViewSet(viewsets.ModelViewSet):
+    
+    serializer_class = serializers.${model_name}Serializer
+    queryset = models.${model_name}.objects.all()
+
+
+
+
+

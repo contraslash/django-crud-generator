@@ -4,6 +4,50 @@ import sys
 import codecs
 import string
 
+def render_template_with_args_in_file(file, template, **kwargs):
+    template_rendered = string.Template(template).safe_substitute(**kwargs)
+    file.write(template_rendered)
+    
+
+
+def create_or_open(file_name, template_file_name, args):
+    file = None
+    if not os.path.isfile(
+        os.path.join(
+            args['django_application_folder'],
+            file_name
+        )
+    ):
+        # If file_name does not exists, create
+        file = codecs.open(
+            os.path.join(
+                args['django_application_folder'],
+                file_name
+            ),
+            'w+',
+            encoding='UTF-8'
+        )
+        print("Creating {}".format(file_name))
+        template_file_content = "".join(
+            codecs.open(
+                template_file_name,
+                encoding='UTF-8'
+            ).readlines()
+        )
+        file.write(urls_initial_template)
+        
+    else:
+        # If file exists, just load the file
+        file = codecs.open(
+                os.path.join(args['django_application_folder'], 
+                file_name
+            ),
+            'a+',
+            encoding='UTF-8'
+        )
+
+    return file
+
 
 def sanity_check():
     """
@@ -14,9 +58,12 @@ def sanity_check():
     if not os.path.isfile(
         os.path.join(
             args['django_application_folder'],
-            'models.py')):
+            'models.py'
+        )
+    ):
         print("django_application_folder is not a Django application folder")
         sys.exit(1)
+
 
 
 def conf(args):
@@ -26,14 +73,18 @@ def conf(args):
     :return:
     """
 
-    if not os.path.isfile(os.path.join(
+    if not os.path.isfile(
+        os.path.join(
             args['django_application_folder'],
-            'conf.py')):
+            'conf.py'
+        )
+    ):
         # If conf.py does not exists, create
         conf_file = codecs.open(
             os.path.join(
                 args['django_application_folder'],
-                'conf.py'),
+                'conf.py'
+            ),
             'w+',
             encoding='UTF-8'
         )
@@ -42,7 +93,8 @@ def conf(args):
     else:
         # If file exists, just load the file
         conf_file = codecs.open(
-            os.path.join(args['django_application_folder'], 'conf.py'),
+                os.path.join(args['django_application_folder'], 'conf.py'
+            ),
             'a+',
             encoding='UTF-8'
         )
@@ -56,7 +108,9 @@ def conf(args):
     )
     template_rendered = string.Template(
         conf_template
-    ).safe_substitute(model_prefix=args['model_prefix'])
+    ).safe_substitute(
+        model_prefix=args['model_prefix']
+    )
 
     # Put content on file
     conf_file.write(template_rendered)
@@ -69,16 +123,21 @@ def views(args):
     :param args: command line args
     :return:
     """
+
+    # First we make sure views are a package instead a file
     if not os.path.isdir(
         os.path.join(
             args['django_application_folder'],
-            'views')):
+            'views'
+        )
+    ):
         os.mkdir(os.path.join(args['django_application_folder'], 'views'))
         codecs.open(
             os.path.join(
                 args['django_application_folder'],
                 'views',
-                '__init__.py'),
+                '__init__.py'
+            ),
             'w+'
         )
 
@@ -121,7 +180,9 @@ def urls(args):
     if not os.path.isfile(
         os.path.join(
             args['django_application_folder'],
-            'urls.py')):
+            'urls.py'
+        )
+    ):
         # If conf.py does not exists, create
         urls_file = codecs.open(
             os.path.join(
@@ -168,6 +229,9 @@ def urls(args):
     urls_file.close()
 
 
+def api(args):
+    pass
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         "Create a simple CRUD Structure based contraslash django application "
@@ -194,7 +258,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--url_pattern', type=str, help="Pattern for url")
 
-    args = vars(parser.parse_args())
+    parser.add_argument('--create_api', type=bool, help="Should create django rest framework model serializer")
+
+    args = vars(parser.parse_args())    
 
     # If model prefix is not defined, we'll going to define model_prefix as
     # model_name in uppercase
@@ -216,3 +282,9 @@ if __name__ == '__main__':
     views(args)
 
     urls(args)
+
+    if args['create_api']:
+        api(args)
+
+    
+    
