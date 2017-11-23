@@ -4,13 +4,34 @@ import sys
 import codecs
 import string
 
-def render_template_with_args_in_file(file, template, **kwargs):
-    template_rendered = string.Template(template).safe_substitute(**kwargs)
+
+def render_template_with_args_in_file(file, template_file_name, **kwargs):
+    """
+    Get a file and render the content of the template_file_name with kwargs in a file
+    :param file: A File Stream to write
+    :param template_file_name: path to route with template name
+    :param **kwargs: Args to be rendered in template
+    """
+    template_file_content = "".join(
+        codecs.open(
+            template_file_name,
+            encoding='UTF-8'
+        ).readlines()
+    )
+    print("Tryinh to render {} with args".format(template_file_name))
+    from pprint import pprint
+    pprint(kwargs)
+    template_rendered = string.Template(template_file_content).safe_substitute(**kwargs)
     file.write(template_rendered)
-    
 
 
-def create_or_open(file_name, template_file_name, args):
+def create_or_open(file_name, initial_template_file_name, args):
+    """
+    Creates a file or open the file with file_name name
+    :param file_name: String with a filename
+    :param initial_template_file_name: String with path to initial template
+    :param args: from console to determine path to save the files
+    """
     file = None
     if not os.path.isfile(
         os.path.join(
@@ -28,14 +49,8 @@ def create_or_open(file_name, template_file_name, args):
             encoding='UTF-8'
         )
         print("Creating {}".format(file_name))
-        template_file_content = "".join(
-            codecs.open(
-                template_file_name,
-                encoding='UTF-8'
-            ).readlines()
-        )
-        file.write(urls_initial_template)
-        
+        if initial_template_file_name:
+            render_template_with_args_in_file(file, initial_template_file_name, **{})
     else:
         # If file exists, just load the file
         file = codecs.open(
@@ -47,6 +62,19 @@ def create_or_open(file_name, template_file_name, args):
         )
 
     return file
+
+
+def generic_insert_module(module_name, **kwargs):
+    """
+    In general we have a initial template and then insert new data, so we dont repeat the schema for each module
+    :param module_name: String with module name
+    :paran **kwargs: Args to be rendered in template
+    """
+    file = create_or_open(
+        '{}.py'.format(module_name), 
+        '{}_initial.py.tmpl'.format(module_name), args)
+    render_template_with_args_in_file(file, '{}.py.tmpl'.format(module_name), **kwargs)
+    file.close()
 
 
 def sanity_check():
@@ -65,55 +93,14 @@ def sanity_check():
         sys.exit(1)
 
 
-
 def conf(args):
     """
     Create or modify the conf.py file
     :param args: command line args
     :return:
     """
-
-    if not os.path.isfile(
-        os.path.join(
-            args['django_application_folder'],
-            'conf.py'
-        )
-    ):
-        # If conf.py does not exists, create
-        conf_file = codecs.open(
-            os.path.join(
-                args['django_application_folder'],
-                'conf.py'
-            ),
-            'w+',
-            encoding='UTF-8'
-        )
-        print("Creating conf.py")
-        conf_file.write("from base import conf\n")
-    else:
-        # If file exists, just load the file
-        conf_file = codecs.open(
-                os.path.join(args['django_application_folder'], 'conf.py'
-            ),
-            'a+',
-            encoding='UTF-8'
-        )
-
-    # Load content from template
-    conf_template = "".join(
-        codecs.open(
-            'conf.py.tmpl',
-            encoding='UTF-8'
-        ).readlines()
-    )
-    template_rendered = string.Template(
-        conf_template
-    ).safe_substitute(
-        model_prefix=args['model_prefix']
-    )
-
-    # Put content on file
-    conf_file.write(template_rendered)
+    conf_file = create_or_open('conf.py', 'conf_initial.py.tmpl', args)
+    render_template_with_args_in_file(conf_file, 'conf.py.tmpl', model_prefix=args['model_prefix'])
     conf_file.close()
 
 
@@ -141,32 +128,24 @@ def views(args):
             'w+'
         )
 
-    view_file = codecs.open(
+    view_file = create_or_open(
         os.path.join(
-            args['django_application_folder'],
             'views',
             '{}.py'.format(args['model_name'].lower())
-        ),
-        'w+',
-        encoding='UTF-8'
+        ), 
+        '', 
+        args
     )
-
-    view_template = "".join(
-        codecs.open(
-            'view.py.tmpl',
-            encoding='UTF-8'
-        ).readlines()
-    )
-
+    # Load content from template
     application_name = args['django_application_folder'].split("/")[-1]
-
-    template_rendered = string.Template(view_template).safe_substitute(
+    render_template_with_args_in_file(
+        view_file, 
+        'view.py.tmpl',
         model_name=args['model_name'],
         model_prefix=args['model_prefix'],
         application_name=application_name,
         model_name_lower=args['model_name'].lower()
     )
-    view_file.write(template_rendered)
     view_file.close()
 
 
@@ -176,56 +155,15 @@ def urls(args):
     :param args:
     :return:
     """
-
-    if not os.path.isfile(
-        os.path.join(
-            args['django_application_folder'],
-            'urls.py'
-        )
-    ):
-        # If conf.py does not exists, create
-        urls_file = codecs.open(
-            os.path.join(
-                args['django_application_folder'],
-                'urls.py'
-            ),
-            'w+',
-            encoding='UTF-8'
-        )
-        print("Creating urls.py")
-        urls_initial_template = "".join(
-            codecs.open(
-                'urls_initial.py.tmpl',
-                encoding='UTF-8'
-            ).readlines()
-        )
-        urls_file.write(urls_initial_template)
-    else:
-        # If file exists, just load the file
-        urls_file = codecs.open(
-            os.path.join(
-                args['django_application_folder'],
-                'urls.py'
-            ),
-            'a+',
-            encoding='UTF-8'
-        )
-
+    urls_file = create_or_open('urls.py', 'urls_initial.py.tmpl', args)
     # Load content from template
-    urls_template = "".join(
-        codecs.open(
-            'urls.py.tmpl',
-            encoding='UTF-8'
-        ).readlines()
-    )
-    template_rendered = string.Template(urls_template).safe_substitute(
+    render_template_with_args_in_file(
+        urls_file, 
+        'urls.py.tmpl', 
         model_prefix=args['model_prefix'],
         url_pattern=args['url_pattern'],
         view_file=args['model_name'].lower()
     )
-
-    # Put content on file
-    urls_file.write(template_rendered)
     urls_file.close()
 
 

@@ -3,9 +3,14 @@ from . import (
     viewsets
 )
 
-router.register(
+
+${url_pattern}_router = DefaultRouter
+
+${url_pattern}_router.register(
     r'api/${url_pattern}',
     ${model_name}ViewSet,
     base_name=${url_pattern}
 )
-urlpatterns += 
+
+urlpatterns += ${url_pattern}_router
+
