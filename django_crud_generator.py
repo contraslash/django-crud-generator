@@ -18,9 +18,6 @@ def render_template_with_args_in_file(file, template_file_name, **kwargs):
             encoding='UTF-8'
         ).readlines()
     )
-    print("Tryinh to render {} with args".format(template_file_name))
-    from pprint import pprint
-    pprint(kwargs)
     template_rendered = string.Template(template_file_content).safe_substitute(**kwargs)
     file.write(template_rendered)
 
@@ -93,17 +90,6 @@ def sanity_check():
         sys.exit(1)
 
 
-def conf(args):
-    """
-    Create or modify the conf.py file
-    :param args: command line args
-    :return:
-    """
-    conf_file = create_or_open('conf.py', 'conf_initial.py.tmpl', args)
-    render_template_with_args_in_file(conf_file, 'conf.py.tmpl', model_prefix=args['model_prefix'])
-    conf_file.close()
-
-
 def views(args):
     """
     Create the view file
@@ -138,6 +124,7 @@ def views(args):
     )
     # Load content from template
     application_name = args['django_application_folder'].split("/")[-1]
+    
     render_template_with_args_in_file(
         view_file, 
         'view.py.tmpl',
@@ -149,22 +136,6 @@ def views(args):
     view_file.close()
 
 
-def urls(args):
-    """
-    Create or modify the urls_file
-    :param args:
-    :return:
-    """
-    urls_file = create_or_open('urls.py', 'urls_initial.py.tmpl', args)
-    # Load content from template
-    render_template_with_args_in_file(
-        urls_file, 
-        'urls.py.tmpl', 
-        model_prefix=args['model_prefix'],
-        url_pattern=args['url_pattern'],
-        view_file=args['model_name'].lower()
-    )
-    urls_file.close()
 
 
 def api(args):
@@ -215,14 +186,31 @@ if __name__ == '__main__':
 
     sanity_check()
 
-    conf(args)
-
+    # Views has an specific logic, so we don't touch it
     views(args)
 
-    urls(args)
-
+    modules_to_inject = [
+        'conf',
+        'urls',
+        'forms'
+    ]
+    
     if args['create_api']:
-        api(args)
+        modules_to_inject += [
+            'serializers',
+            'viewsets',
+            'urls_api'
+        ]
 
-    
-    
+    for module in modules_to_inject:
+        generic_insert_module(
+            module, 
+            model_name=args['model_name'],
+            model_prefix=args['model_prefix'],
+            url_pattern=args['url_pattern'],
+            view_file=args['model_name'].lower()
+        )
+
+    # This is just a fix to link api_urls with urls
+    if args['create_api']:
+        render_template_with_args_in_file(create_or_open('urls.py', "", args), "urls_api_urls_patch.py.tmpl")
