@@ -1,9 +1,14 @@
 import argparse
-import os
-import sys
 import codecs
+import os
+import re
+import sys
 import string
 
+
+def convert(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 def render_template_with_args_in_file(file, template_file_name, **kwargs):
     """
@@ -117,7 +122,7 @@ def views(args):
     view_file = create_or_open(
         os.path.join(
             'views',
-            '{}.py'.format(args['model_name'].lower())
+            '{}.py'.format(convert(args['model_name']).strip())
         ), 
         '', 
         args
@@ -208,7 +213,7 @@ if __name__ == '__main__':
             model_name=args['model_name'],
             model_prefix=args['model_prefix'],
             url_pattern=args['url_pattern'],
-            view_file=args['model_name'].lower()
+            view_file=convert(args['model_name'].strip())
         )
 
     # This is just a fix to link api_urls with urls
