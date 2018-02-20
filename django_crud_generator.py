@@ -5,6 +5,8 @@ import re
 import sys
 import string
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+print(BASE_DIR)
 
 def convert(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -74,8 +76,21 @@ def generic_insert_module(module_name, **kwargs):
     """
     file = create_or_open(
         '{}.py'.format(module_name), 
-        '{}_initial.py.tmpl'.format(module_name), args)
-    render_template_with_args_in_file(file, '{}.py.tmpl'.format(module_name), **kwargs)
+        os.path.join(
+            BASE_DIR, 
+            '{}_initial.py.tmpl'.format(module_name)
+        ), 
+        args
+        )
+        
+    render_template_with_args_in_file(
+        file, 
+        os.path.join(
+            BASE_DIR, 
+            '{}.py.tmpl'.format(module_name)
+        ), 
+        **kwargs
+        )
     file.close()
 
 
@@ -132,7 +147,10 @@ def views(args):
     
     render_template_with_args_in_file(
         view_file, 
-        'view.py.tmpl',
+        os.path.join(
+            BASE_DIR, 
+            'view.py.tmpl'
+        ),
         model_name=args['model_name'],
         model_prefix=args['model_prefix'],
         application_name=application_name,
@@ -218,4 +236,17 @@ if __name__ == '__main__':
 
     # This is just a fix to link api_urls with urls
     if args['create_api']:
-        render_template_with_args_in_file(create_or_open('urls.py', "", args), "urls_api_urls_patch.py.tmpl")
+        render_template_with_args_in_file(
+            create_or_open(
+                os.path.join(
+                    BASE_DIR, 
+                    'urls.py'
+                ), 
+                "", 
+                args
+            ), 
+            os.path.join(
+                BASE_DIR, 
+                "urls_api_urls_patch.py.tmpl"
+            )
+        )
