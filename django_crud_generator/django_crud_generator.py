@@ -5,10 +5,13 @@ import re
 import sys
 import string
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 print(BASE_DIR)
 
 def convert(name):
+    """
+    This function converts a Camel Case word to a underscore word
+    """
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
@@ -68,7 +71,7 @@ def create_or_open(file_name, initial_template_file_name, args):
     return file
 
 
-def generic_insert_module(module_name, **kwargs):
+def generic_insert_module(module_name, args, **kwargs):
     """
     In general we have a initial template and then insert new data, so we dont repeat the schema for each module
     :param module_name: String with module name
@@ -81,7 +84,7 @@ def generic_insert_module(module_name, **kwargs):
             '{}_initial.py.tmpl'.format(module_name)
         ), 
         args
-        )
+    )
         
     render_template_with_args_in_file(
         file, 
@@ -94,7 +97,7 @@ def generic_insert_module(module_name, **kwargs):
     file.close()
 
 
-def sanity_check():
+def sanity_check(args):
     """
     Verify if the work folder is a django app.
     A valid django app always must have a models.py file
@@ -159,12 +162,10 @@ def views(args):
     view_file.close()
 
 
-
-
 def api(args):
     pass
 
-if __name__ == '__main__':
+def execute_from_command_line():
     parser = argparse.ArgumentParser(
         "Create a simple CRUD Structure based contraslash django application "
         "structure"
@@ -207,7 +208,7 @@ if __name__ == '__main__':
             'django_application_folder'
         ][:-1]
 
-    sanity_check()
+    sanity_check(args)
 
     # Views has an specific logic, so we don't touch it
     views(args)
@@ -228,6 +229,7 @@ if __name__ == '__main__':
     for module in modules_to_inject:
         generic_insert_module(
             module, 
+            args,
             model_name=args['model_name'],
             model_prefix=args['model_prefix'],
             url_pattern=args['url_pattern'],
@@ -250,3 +252,7 @@ if __name__ == '__main__':
                 "urls_api_urls_patch.py.tmpl"
             )
         )
+
+
+if __name__ == '__main__':
+    execute_from_command_line()

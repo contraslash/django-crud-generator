@@ -1,0 +1,2 @@
+include README.md
+include django_crud_generator/templates/*.tmpl

@@ -1,0 +1,1 @@
+from  django_crud_generator import execute_from_command_line
