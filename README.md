@@ -1,5 +1,9 @@
 # Django CRUD Generator
 
+
+[![PyPI](https://img.shields.io/pypi/v/django-crud-generator.svg)](https://pypi.org/project/django-crud-generator)
+
+
 This is a simpls script to automate CRUD operations based on [Base Django](https://git.contraslash.com/ma0/base-django) 
 by [contraslash](https://contraslash.com)
  
