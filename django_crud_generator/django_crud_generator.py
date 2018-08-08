@@ -113,25 +113,22 @@ def sanity_check(args):
         sys.exit(1)
 
 
-def views(args):
+def generic_insert_with_folder(folder_name, file_name, args):
     """
-    Create the view file
-    :param args: command line args
-    :return:
+    In general if we need to put a file on a folder, we use this method
     """
-
     # First we make sure views are a package instead a file
     if not os.path.isdir(
         os.path.join(
             args['django_application_folder'],
-            'views'
+            folder_name
         )
     ):
         os.mkdir(os.path.join(args['django_application_folder'], 'views'))
         codecs.open(
             os.path.join(
                 args['django_application_folder'],
-                'views',
+                folder_name,
                 '__init__.py'
             ),
             'w+'
@@ -139,15 +136,13 @@ def views(args):
 
     view_file = create_or_open(
         os.path.join(
-            'views',
-            '{}.py'.format(convert(args['model_name']).strip())
+            folder_name,
+            '{}.py'.format(file_name)
         ), 
         '', 
         args
     )
     # Load content from template
-    application_name = args['django_application_folder'].split("/")[-1]
-    
     render_template_with_args_in_file(
         view_file, 
         os.path.join(
@@ -156,7 +151,6 @@ def views(args):
         ),
         model_name=args['model_name'],
         model_prefix=args['model_prefix'],
-        application_name=application_name,
         model_name_lower=args['model_name'].lower()
     )
     view_file.close()
@@ -211,7 +205,11 @@ def execute_from_command_line():
     sanity_check(args)
 
     # Views has an specific logic, so we don't touch it
-    views(args)
+    simplified_file_name = convert(args['model_name'].strip())
+
+    generic_insert_with_folder("views", simplified_file_name,args)
+    # Seems like tests also has the same logic
+    generic_insert_with_folder("tests", "test_{}".format(simplified_file_name),args)
 
     modules_to_inject = [
         'conf',
@@ -233,7 +231,7 @@ def execute_from_command_line():
             model_name=args['model_name'],
             model_prefix=args['model_prefix'],
             url_pattern=args['url_pattern'],
-            view_file=convert(args['model_name'].strip())
+            view_file=simplified_file_name
         )
 
     # This is just a fix to link api_urls with urls
