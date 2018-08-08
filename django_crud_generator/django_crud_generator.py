@@ -185,10 +185,12 @@ def execute_from_command_line():
 
     parser.add_argument('--url_pattern', type=str, help="Pattern for url")
 
-    parser.add_argument('--create_api', type=bool, help="Should create django rest framework model serializer")
+    parser.add_argument('--create_api', action='store_true', help="Create a api using Django Rest Framework")
 
+    parser.add_argument('--add_mixins', action='store_true', help="Add mixins to manage nested urls")
+    
     args = vars(parser.parse_args())    
-
+    
     # If model prefix is not defined, we'll going to define model_prefix as
     # model_name in uppercase
     if args['model_prefix'] is None:
@@ -224,6 +226,11 @@ def execute_from_command_line():
             'urls_api'
         ]
 
+    if args['add_mixins']:
+        modules_to_inject += [
+            'mixins'
+        ]
+
     for module in modules_to_inject:
         generic_insert_module(
             module, 
@@ -231,7 +238,8 @@ def execute_from_command_line():
             model_name=args['model_name'],
             model_prefix=args['model_prefix'],
             url_pattern=args['url_pattern'],
-            view_file=simplified_file_name
+            view_file=simplified_file_name,
+            model_name_lower=args['model_name'].lower()
         )
 
     # This is just a fix to link api_urls with urls
@@ -250,6 +258,7 @@ def execute_from_command_line():
                 "urls_api_urls_patch.py.tmpl"
             )
         )
+    
 
 
 if __name__ == '__main__':

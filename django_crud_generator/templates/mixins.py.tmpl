@@ -1,0 +1,6 @@
+class ${model_name}Mixin(object):
+
+    def get_${model_name_lower}(self):
+        return models.${model_name}.objects.get(pk=self.kwargs.get("pk_${model_name_lower}", 0))
+
+
