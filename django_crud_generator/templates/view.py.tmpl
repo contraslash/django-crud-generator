@@ -22,6 +22,16 @@ class List(LoginRequiredMixin, base_views.BaseListView):
     def __init__(self):
         super(List, self).__init__()
 
+    def get_context_data(self, **kwargs):
+        context = super(List, self).get_context_data(**kwargs)
+
+        if self.request.user.has_perm("${application_name}.add_${model_name_lower}"):
+            context['create_object_reversed_url'] = reverse_lazy(
+                conf.${model_prefix}_CREATE_URL_NAME
+            )
+        
+        return context
+
 
 class Create(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseCreateView):
     """
@@ -50,6 +60,28 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
 
     def __init__(self):
         super(Detail, self).__init__()
+
+    
+    def get_context_data(self, **kwargs):
+        context = super(Detail, self).get_context_data(**kwargs)
+
+        if self.request.user.has_perm("inventory.change_provider"):
+            context['update_object_reversed_url'] = reverse_lazy(
+                conf.${model_prefix}_UPDATE_URL_NAME,
+                kwargs={
+                    'pk': self.get_object().id
+                }
+            )
+
+        if self.request.user.has_perm("inventory.delete_provider"):
+            context['delete_object_reversed_url'] = reverse_lazy(
+                conf.${model_prefix}_DELETE_URL_NAME,
+                kwargs={
+                    'pk': self.get_object().id
+                }
+            )
+
+        return context
 
 
 class Update(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseUpdateView):

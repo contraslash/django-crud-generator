@@ -113,7 +113,7 @@ def sanity_check(args):
         sys.exit(1)
 
 
-def generic_insert_with_folder(folder_name, file_name, args):
+def generic_insert_with_folder(folder_name, file_name, template_name, args):
     """
     In general if we need to put a file on a folder, we use this method
     """
@@ -147,11 +147,12 @@ def generic_insert_with_folder(folder_name, file_name, args):
         view_file, 
         os.path.join(
             BASE_DIR, 
-            'view.py.tmpl'
+            template_name
         ),
         model_name=args['model_name'],
         model_prefix=args['model_prefix'],
-        model_name_lower=args['model_name'].lower()
+        model_name_lower=args['model_name'].lower(),
+        application_name=args['django_application_folder'].split("/")[-1]
     )
     view_file.close()
 
@@ -209,9 +210,9 @@ def execute_from_command_line():
     # Views has an specific logic, so we don't touch it
     simplified_file_name = convert(args['model_name'].strip())
 
-    generic_insert_with_folder("views", simplified_file_name,args)
+    generic_insert_with_folder("views", simplified_file_name, "view.py.tmpl", args)
     # Seems like tests also has the same logic
-    generic_insert_with_folder("tests", "test_{}".format(simplified_file_name),args)
+    generic_insert_with_folder("tests", "test_{}".format(simplified_file_name), "tests.py.tmpl", args)
 
     modules_to_inject = [
         'conf',
