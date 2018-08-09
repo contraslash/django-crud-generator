@@ -61,7 +61,6 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
     def __init__(self):
         super(Detail, self).__init__()
 
-    
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
 
