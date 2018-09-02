@@ -124,7 +124,7 @@ def generic_insert_with_folder(folder_name, file_name, template_name, args):
             folder_name
         )
     ):
-        os.mkdir(os.path.join(args['django_application_folder'], 'views'))
+        os.mkdir(os.path.join(args['django_application_folder'], folder_name))
         codecs.open(
             os.path.join(
                 args['django_application_folder'],
