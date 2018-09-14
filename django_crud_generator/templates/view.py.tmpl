@@ -47,9 +47,7 @@ class Create(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseCreateV
         super(Create, self).__init__()
 
     def get_success_url(self):
-        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs={
-            'pk': self.object.id
-        })
+        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs=self.kwargs_for_reverse_url())
 
 
 class Detail(LoginRequiredMixin, base_views.BaseDetailView):
@@ -67,17 +65,13 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
         if self.request.user.has_perm("inventory.change_provider"):
             context['update_object_reversed_url'] = reverse_lazy(
                 conf.${model_prefix}_UPDATE_URL_NAME,
-                kwargs={
-                    'pk': self.get_object().id
-                }
+                kwargs=self.kwargs_for_reverse_url()
             )
 
         if self.request.user.has_perm("inventory.delete_provider"):
             context['delete_object_reversed_url'] = reverse_lazy(
                 conf.${model_prefix}_DELETE_URL_NAME,
-                kwargs={
-                    'pk': self.get_object().id
-                }
+                kwargs=self.kwargs_for_reverse_url()
             )
 
         return context
@@ -97,9 +91,7 @@ class Update(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseUpdateV
         super(Update, self).__init__()
 
     def get_success_url(self):
-        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs={
-            'pk': self.object.id
-        })
+        return reverse_lazy(conf.${model_prefix}_DETAIL_URL_NAME, kwargs=self.kwargs_for_reverse_url())
 
 
 class Delete(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseDeleteView):
