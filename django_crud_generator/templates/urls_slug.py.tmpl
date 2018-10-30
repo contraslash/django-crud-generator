@@ -1,0 +1,31 @@
+from .views import ${view_file}
+
+urlpatterns += [
+    # ${view_file}
+    url(
+        '^${url_pattern}/$$',
+        ${view_file}.List.as_view(),
+        name=conf.${model_prefix}_LIST_URL_NAME
+    ),
+    url(
+        '^${url_pattern}/create/$$',
+        ${view_file}.Create.as_view(),
+        name=conf.${model_prefix}_CREATE_URL_NAME
+    ),
+    url(
+        '^${url_pattern}/(?P<slug>[\w-]+)/$$',
+        ${view_file}.Detail.as_view(),
+        name=conf.${model_prefix}_DETAIL_URL_NAME
+    ),
+    url(
+        '^${url_pattern}/(?P<slug>[\w-]+)/update/$$',
+        ${view_file}.Update.as_view(),
+        name=conf.${model_prefix}_UPDATE_URL_NAME
+    ),
+    url(
+        '^${url_pattern}/(?P<slug>[\w-]+)/delete/$$',
+        ${view_file}.Delete.as_view(),
+        name=conf.${model_prefix}_DELETE_URL_NAME
+    ),
+]
+

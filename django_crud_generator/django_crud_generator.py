@@ -189,6 +189,8 @@ def execute_from_command_line():
     parser.add_argument('--create_api', action='store_true', help="Create a api using Django Rest Framework")
 
     parser.add_argument('--add_mixins', action='store_true', help="Add mixins to manage nested urls")
+
+    parser.add_argument('--slug', action='store_true', help="Use slug instad pk on urls")
     
     args = vars(parser.parse_args())    
     
@@ -216,9 +218,13 @@ def execute_from_command_line():
 
     modules_to_inject = [
         'conf',
-        'urls',
         'forms'
     ]
+
+    if args['slug']:
+        modules_to_inject.append('urls_slug')
+    else:
+        modules_to_inject.append('urls')
     
     if args['create_api']:
         modules_to_inject += [
@@ -227,10 +233,9 @@ def execute_from_command_line():
             'urls_api'
         ]
 
+    # If mixins flag is present, we add mixins to the `modules to inject`
     if args['add_mixins']:
-        modules_to_inject += [
-            'mixins'
-        ]
+        modules_to_inject.append('mixins')
 
     for module in modules_to_inject:
         generic_insert_module(
