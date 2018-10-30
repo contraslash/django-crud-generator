@@ -5,8 +5,8 @@ import re
 import sys
 import string
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
-print(BASE_DIR)
+BASE_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
+print(BASE_TEMPLATES_DIR)
 
 def convert(name):
     """
@@ -80,7 +80,7 @@ def generic_insert_module(module_name, args, **kwargs):
     file = create_or_open(
         '{}.py'.format(module_name), 
         os.path.join(
-            BASE_DIR, 
+            BASE_TEMPLATES_DIR, 
             '{}_initial.py.tmpl'.format(module_name)
         ), 
         args
@@ -89,7 +89,7 @@ def generic_insert_module(module_name, args, **kwargs):
     render_template_with_args_in_file(
         file, 
         os.path.join(
-            BASE_DIR, 
+            BASE_TEMPLATES_DIR, 
             '{}.py.tmpl'.format(module_name)
         ), 
         **kwargs
@@ -146,7 +146,7 @@ def generic_insert_with_folder(folder_name, file_name, template_name, args):
     render_template_with_args_in_file(
         view_file, 
         os.path.join(
-            BASE_DIR, 
+            BASE_TEMPLATES_DIR, 
             template_name
         ),
         model_name=args['model_name'],
@@ -248,14 +248,14 @@ def execute_from_command_line():
         render_template_with_args_in_file(
             create_or_open(
                 os.path.join(
-                    BASE_DIR, 
+                    BASE_TEMPLATES_DIR, 
                     'urls.py'
                 ), 
                 "", 
                 args
             ), 
             os.path.join(
-                BASE_DIR, 
+                BASE_TEMPLATES_DIR, 
                 "urls_api_urls_patch.py.tmpl"
             )
         )

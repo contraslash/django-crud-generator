@@ -5,3 +5,5 @@ dist/
 *.egg-info
 
 publish_instructions.md
+
+.DS_Store
