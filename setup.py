@@ -7,9 +7,10 @@ def readme():
 
 setup(
     name='django_crud_generator',
-    version='0.3.1',
+    version='0.3.2',
     description='A simple scaffolding for django applications',
     long_description=readme(),
+    long_description_content_type="text/markdown",
     url='http://github.com/contraslash/django-crud-generator',
     keywords='django scaffolding tool',
     author='contraslash S.A.S.',
