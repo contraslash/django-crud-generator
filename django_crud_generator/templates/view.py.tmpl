@@ -27,6 +27,8 @@ class List(LoginRequiredMixin, base_views.BaseListView):
     def get_context_data(self, **kwargs):
         context = super(List, self).get_context_data(**kwargs)
 
+        context['detail_url_name'] = conf.${model_prefix}_DETAIL_URL_NAME
+
         if self.request.user.has_perm("${application_name}.add_${model_name_lower}"):
             context['create_object_reversed_url'] = reverse_lazy(
                 conf.${model_prefix}_CREATE_URL_NAME
