@@ -45,7 +45,7 @@ class Create(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseCreateV
     permission_required = (
         '${application_name}.add_${model_name_lower}'
     )
-    fields = '__all__'
+    form_class = forms.${model_name}
 
     def __init__(self):
         super(Create, self).__init__()
@@ -86,7 +86,7 @@ class Update(LoginRequiredMixin, PermissionRequiredMixin, base_views.BaseUpdateV
     Update a ${model_name}
     """
     model = models.${model_name}
-    fields = '__all__'
+    form_class = forms.${model_name}
     permission_required = (
         '${application_name}.change_${model_name_lower}'
     )

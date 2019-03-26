@@ -2,5 +2,5 @@ class ${model_name}(forms.ModelForm):
     class Meta:
         model = models.${model_name}
         fields = '__all__'
-
+        widgets = generate_bootstrap_widgets_for_all_fields(models.${model_name})
 
