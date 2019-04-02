@@ -1,13 +1,14 @@
 import codecs
 from setuptools import setup
 
+
 def readme():
     with codecs.open('README.md') as f:
         return f.read()
 
 setup(
     name='django_crud_generator',
-    version='0.3.4',
+    version='0.3.5',
     description='A simple scaffolding for django applications',
     long_description=readme(),
     long_description_content_type="text/markdown",
@@ -32,4 +33,3 @@ setup(
         'Contraslash': 'https://contraslash.com/'
     },
 )
- 
