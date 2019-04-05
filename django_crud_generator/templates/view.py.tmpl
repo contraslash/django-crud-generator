@@ -66,13 +66,13 @@ class Detail(LoginRequiredMixin, base_views.BaseDetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
 
-        if self.request.user.has_perm("inventory.change_provider"):
+        if self.request.user.has_perm("${application_name}.change_${model_name_lower}"):
             context['update_object_reversed_url'] = reverse_lazy(
                 conf.${model_prefix}_UPDATE_URL_NAME,
                 kwargs=self.kwargs_for_reverse_url()
             )
 
-        if self.request.user.has_perm("inventory.delete_provider"):
+        if self.request.user.has_perm("${application_name}.delete_${model_name_lower}"):
             context['delete_object_reversed_url'] = reverse_lazy(
                 conf.${model_prefix}_DELETE_URL_NAME,
                 kwargs=self.kwargs_for_reverse_url()
