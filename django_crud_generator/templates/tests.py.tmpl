@@ -2,7 +2,10 @@ from django.test import (
     TestCase,
     Client
 )
-from django.core.urlresolvers import reverse_lazy
+try:
+    from django.core.urlresolvers import reverse_lazy
+except ImportError:
+    from django.urls import reverse_lazy
 from django.contrib.auth import (
     get_user_model,
     models as auth_models
