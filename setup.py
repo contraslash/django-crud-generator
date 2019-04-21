@@ -9,7 +9,7 @@ def readme():
 
 setup(
     name='django_crud_generator',
-    version='0.3.7',
+    version='0.3.8',
     description='A simple scaffolding for django applications',
     long_description=readme(),
     long_description_content_type="text/markdown",

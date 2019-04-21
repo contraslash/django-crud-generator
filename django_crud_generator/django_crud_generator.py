@@ -8,12 +8,14 @@ import string
 BASE_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 print(BASE_TEMPLATES_DIR)
 
+
 def convert(name):
     """
     This function converts a Camel Case word to a underscore word
     """
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
 
 def render_template_with_args_in_file(file, template_file_name, **kwargs):
     """
@@ -61,7 +63,8 @@ def create_or_open(file_name, initial_template_file_name, args):
     else:
         # If file exists, just load the file
         file = codecs.open(
-                os.path.join(args['django_application_folder'], 
+            os.path.join(
+                args['django_application_folder'],
                 file_name
             ),
             'a+',
@@ -160,6 +163,7 @@ def generic_insert_with_folder(folder_name, file_name, template_name, args):
 def api(args):
     pass
 
+
 def execute_from_command_line():
     parser = argparse.ArgumentParser(
         "Create a simple CRUD Structure based contraslash django application "
@@ -191,7 +195,7 @@ def execute_from_command_line():
     parser.add_argument('--add_mixins', action='store_true', help="Add mixins to manage nested urls")
 
     parser.add_argument('--slug', action='store_true', help="Use slug instad pk on urls")
-    
+
     args = vars(parser.parse_args())    
     
     # If model prefix is not defined, we'll going to define model_prefix as
@@ -264,7 +268,6 @@ def execute_from_command_line():
                 "urls_api_urls_patch.py.tmpl"
             )
         )
-    
 
 
 if __name__ == '__main__':
