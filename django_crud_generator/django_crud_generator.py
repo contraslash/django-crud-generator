@@ -1,13 +1,21 @@
 import argparse
 import ast
 import codecs
+import functools
+import operator
 import os
 import re
 import sys
 import string
 
 BASE_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
-print(BASE_TEMPLATES_DIR)
+VIEW_CLASSES = [
+    "List",
+    "Create",
+    "Detail",
+    "Update",
+    "Delete"
+]
 
 
 def convert(name):
@@ -101,12 +109,30 @@ def generic_insert_module(module_name, args, **kwargs):
     file.close()
 
 
+def check_class_in_file(file_path, class_name):
+    try:
+        file_to_scan = open(file_path)
+        content = file_to_scan.read()
+        parsed_tree = ast.parse(content)
+        model_exists = False
+        for node in ast.walk(parsed_tree):
+            if isinstance(node, ast.ClassDef):
+                if node.name == class_name:
+                    model_exists = True
+
+        return model_exists
+    except IOError:
+        print("File {} can't be open".format(file_path))
+        sys.exit(1)
+
+
 def sanity_check(args):
     """
     Verify if the work folder is a django app.
     A valid django app always must have a models.py file
     :return: None
     """
+    # Validate is an django application folder
     if not os.path.isfile(
         os.path.join(
             args['django_application_folder'],
@@ -116,21 +142,33 @@ def sanity_check(args):
         print("django_application_folder is not a Django application folder")
         sys.exit(1)
 
+    # Validate model Exists
     models_file_path = os.path.join(
         args['django_application_folder'],
         'models.py'
     )
 
-    models_file = open(models_file_path)
-    content = models_file.read()
-    parsed_tree = ast.parse(content)
-    model_exists = False
-    for node in ast.walk(parsed_tree):
-        if isinstance(node, ast.ClassDef):
-            if node.name == args["model_name"]:
-                model_exists = True
-    if not model_exists:
+    if not check_class_in_file(models_file_path, args["model_name"]):
         print("Model does not exists")
+        sys.exit(1)
+
+    # Validate views are created
+
+    views_file_name = os.path.join(
+        args['django_application_folder'],
+        'views',
+        "{}.py".format(args['simplified_view_file_name'])
+    )
+
+    if functools.reduce(
+            operator.and_,
+            map(
+                check_class_in_file,
+                (views_file_name,)*len(VIEW_CLASSES),
+                VIEW_CLASSES
+            )
+    ):
+        print("Al views already created")
         sys.exit(1)
 
 
@@ -229,10 +267,12 @@ def execute_from_command_line():
             'django_application_folder'
         ][:-1]
 
-    sanity_check(args)
-
     # Views has an specific logic, so we don't touch it
     simplified_file_name = convert(args['model_name'].strip())
+
+    args["simplified_view_file_name"] = simplified_file_name
+
+    sanity_check(args)
 
     generic_insert_with_folder("views", simplified_file_name, "view.py.tmpl", args)
     # Seems like tests also has the same logic
