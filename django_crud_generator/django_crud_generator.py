@@ -1,4 +1,5 @@
 import argparse
+import ast
 import codecs
 import os
 import re
@@ -113,6 +114,23 @@ def sanity_check(args):
         )
     ):
         print("django_application_folder is not a Django application folder")
+        sys.exit(1)
+
+    models_file_path = os.path.join(
+        args['django_application_folder'],
+        'models.py'
+    )
+
+    models_file = open(models_file_path)
+    content = models_file.read()
+    parsed_tree = ast.parse(content)
+    model_exists = False
+    for node in ast.walk(parsed_tree):
+        if isinstance(node, ast.ClassDef):
+            if node.name == args["model_name"]:
+                model_exists = True
+    if not model_exists:
+        print("Model does not exists")
         sys.exit(1)
 
 
