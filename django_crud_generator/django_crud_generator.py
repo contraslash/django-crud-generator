@@ -51,18 +51,10 @@ def create_or_open(file_name, initial_template_file_name, args):
     :param args: from console to determine path to save the files
     """
     file = None
-    if not os.path.isfile(
-        os.path.join(
-            args['django_application_folder'],
-            file_name
-        )
-    ):
+    if not os.path.isfile(file_name):
         # If file_name does not exists, create
         file = codecs.open(
-            os.path.join(
-                args['django_application_folder'],
-                file_name
-            ),
+            file_name,
             'w+',
             encoding='UTF-8'
         )
@@ -72,10 +64,7 @@ def create_or_open(file_name, initial_template_file_name, args):
     else:
         # If file exists, just load the file
         file = codecs.open(
-            os.path.join(
-                args['django_application_folder'],
-                file_name
-            ),
+            file_name,
             'a+',
             encoding='UTF-8'
         )
@@ -90,7 +79,10 @@ def generic_insert_module(module_name, args, **kwargs):
     :paran **kwargs: Args to be rendered in template
     """
     file = create_or_open(
-        '{}.py'.format(module_name), 
+        os.path.join(
+            args['django_application_folder'],
+            '{}.py'.format(module_name),
+        ),
         os.path.join(
             BASE_TEMPLATES_DIR, 
             '{}_initial.py.tmpl'.format(module_name)
@@ -152,27 +144,8 @@ def sanity_check(args):
         print("Model does not exists")
         sys.exit(1)
 
-    # Validate views are created
 
-    views_file_name = os.path.join(
-        args['django_application_folder'],
-        'views',
-        "{}.py".format(args['simplified_view_file_name'])
-    )
-
-    if functools.reduce(
-            operator.and_,
-            map(
-                check_class_in_file,
-                (views_file_name,)*len(VIEW_CLASSES),
-                VIEW_CLASSES
-            )
-    ):
-        print("Al views already created")
-        sys.exit(1)
-
-
-def generic_insert_with_folder(folder_name, file_name, template_name, args):
+def generic_insert_with_folder(folder_name, file_name, template_name, checking_classes,args):
     """
     In general if we need to put a file on a folder, we use this method
     """
@@ -192,15 +165,28 @@ def generic_insert_with_folder(folder_name, file_name, template_name, args):
             ),
             'w+'
         )
-
+    full_file_name = os.path.join(
+        args['django_application_folder'],
+        folder_name,
+        '{}.py'.format(file_name)
+    )
     view_file = create_or_open(
-        os.path.join(
-            folder_name,
-            '{}.py'.format(file_name)
-        ), 
+        full_file_name,
         '', 
         args
     )
+
+    if functools.reduce(
+            operator.and_,
+            map(
+                check_class_in_file,
+                (full_file_name,)*len(VIEW_CLASSES),
+                checking_classes
+            )
+    ):
+        print("All classes {} already on file {}".format(", ".join(checking_classes), file_name))
+        return
+
     # Load content from template
     render_template_with_args_in_file(
         view_file, 
@@ -274,9 +260,22 @@ def execute_from_command_line():
 
     sanity_check(args)
 
-    generic_insert_with_folder("views", simplified_file_name, "view.py.tmpl", args)
+    generic_insert_with_folder(
+        "views",
+        simplified_file_name,
+        "view.py.tmpl",
+        VIEW_CLASSES,
+        args
+    )
     # Seems like tests also has the same logic
-    generic_insert_with_folder("tests", "test_{}".format(simplified_file_name), "tests.py.tmpl", args)
+    permission_class_name = "{}Permission".format(args["model_name"])
+    generic_insert_with_folder(
+        "tests",
+        "test_{}".format(simplified_file_name),
+        "tests.py.tmpl",
+        [permission_class_name],
+        args
+    )
 
     modules_to_inject = [
         'conf',
@@ -315,6 +314,7 @@ def execute_from_command_line():
         render_template_with_args_in_file(
             create_or_open(
                 os.path.join(
+                    args['django_application_folder'],
                     BASE_TEMPLATES_DIR, 
                     'urls.py'
                 ), 
